@@ -96,14 +96,17 @@
 
     store_gateway_replication_factor: 3,
 
-    memcached_index_queries_enabled: true,
-    memcached_index_queries_max_item_size_mb: 5,
+    cache_index_queries_enabled: true,
+    cache_index_queries_max_item_size_mb: 5,
+    cache_index_queries_backend: 'memcached',
 
-    memcached_chunks_enabled: true,
-    memcached_chunks_max_item_size_mb: 1,
+    cache_chunks_enabled: true,
+    cache_chunks_max_item_size_mb: 1,
+    cache_chunks_backend: 'memcached',
 
-    memcached_metadata_enabled: true,
-    memcached_metadata_max_item_size_mb: 1,
+    cache_metadata_enabled: true,
+    cache_metadata_max_item_size_mb: 1,
+    cache_metadata_backend: 'memcached',
 
     // The query-tee is an optional service which can be used to send
     // the same input query to multiple backends and make them compete
@@ -520,28 +523,43 @@
 
   blocks_chunks_caching_config::
     (
-      if $._config.memcached_index_queries_enabled then {
+      if $._config.cache_index_queries_enabled && $._config.cache_index_queries_backend == 'memcached' then {
         'blocks-storage.bucket-store.index-cache.backend': 'memcached',
         'blocks-storage.bucket-store.index-cache.memcached.addresses': 'dnssrvnoa+memcached-index-queries.%(namespace)s.svc.cluster.local:11211' % $._config,
-        'blocks-storage.bucket-store.index-cache.memcached.max-item-size': $._config.memcached_index_queries_max_item_size_mb * 1024 * 1024,
+        'blocks-storage.bucket-store.index-cache.memcached.max-item-size': $._config.cache_index_queries_max_item_size_mb * 1024 * 1024,
         'blocks-storage.bucket-store.index-cache.memcached.max-async-concurrency': '50',
       } else {}
     ) + (
-      if $._config.memcached_chunks_enabled then {
+      if $._config.cache_index_queries_enabled && $._config.cache_index_queries_backend == 'redis' then {
+        'blocks-storage.bucket-store.index-cache.backend': 'redis',
+      } else {}
+    ) + (
+      if $._config.cache_chunks_enabled && $._config.cache_chunks_backend == 'memcached' then {
         'blocks-storage.bucket-store.chunks-cache.backend': 'memcached',
         'blocks-storage.bucket-store.chunks-cache.memcached.addresses': 'dnssrvnoa+memcached.%(namespace)s.svc.cluster.local:11211' % $._config,
-        'blocks-storage.bucket-store.chunks-cache.memcached.max-item-size': $._config.memcached_chunks_max_item_size_mb * 1024 * 1024,
+        'blocks-storage.bucket-store.chunks-cache.memcached.max-item-size': $._config.cache_chunks_max_item_size_mb * 1024 * 1024,
         'blocks-storage.bucket-store.chunks-cache.memcached.max-async-concurrency': '50',
         'blocks-storage.bucket-store.chunks-cache.memcached.timeout': '450ms',
       } else {}
+    ) + (
+      if $._config.cache_chunks_enabled && $._config.cache_chunks_backend == 'redis' then {
+        'blocks-storage.bucket-store.chunks-cache.backend': 'redis',
+      } else {}
     ),
 
-  blocks_metadata_caching_config:: if $._config.memcached_metadata_enabled then {
-    'blocks-storage.bucket-store.metadata-cache.backend': 'memcached',
-    'blocks-storage.bucket-store.metadata-cache.memcached.addresses': 'dnssrvnoa+memcached-metadata.%(namespace)s.svc.cluster.local:11211' % $._config,
-    'blocks-storage.bucket-store.metadata-cache.memcached.max-item-size': $._config.memcached_metadata_max_item_size_mb * 1024 * 1024,
-    'blocks-storage.bucket-store.metadata-cache.memcached.max-async-concurrency': '50',
-  } else {},
+  blocks_metadata_caching_config::
+    (
+      if $._config.cache_metadata_enabled && $._config.cache_metadata_backend == 'memcached' then {
+        'blocks-storage.bucket-store.metadata-cache.backend': 'memcached',
+        'blocks-storage.bucket-store.metadata-cache.memcached.addresses': 'dnssrvnoa+memcached-metadata.%(namespace)s.svc.cluster.local:11211' % $._config,
+        'blocks-storage.bucket-store.metadata-cache.memcached.max-item-size': $._config.cache_metadata_max_item_size_mb * 1024 * 1024,
+        'blocks-storage.bucket-store.metadata-cache.memcached.max-async-concurrency': '50',
+      } else {}
+    ) + (
+      if $._config.cache_metadata_enabled && $._config.cache_metadata_backend == 'redis' then {
+        'blocks-storage.bucket-store.metadata-cache.backend': 'redis',
+      } else {}
+    ),
 
   bucket_index_config:: if $._config.bucket_index_enabled then {
     // Bucket index is updated by compactor on each cleanup cycle.
