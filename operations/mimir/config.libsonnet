@@ -108,6 +108,8 @@
     cache_metadata_max_item_size_mb: 1,
     cache_metadata_backend: 'memcached',
 
+    cache_results_backend: 'memcached',
+
     // The query-tee is an optional service which can be used to send
     // the same input query to multiple backends and make them compete
     // (comparing performances).
@@ -532,6 +534,7 @@
     ) + (
       if $._config.cache_index_queries_enabled && $._config.cache_index_queries_backend == 'redis' then {
         'blocks-storage.bucket-store.index-cache.backend': 'redis',
+        'blocks-storage.bucket-store.index-cache.redis.endpoint': 'dnssrvnoa+redis-index-queries.%(namespace)s.svc.cluster.local:6379' % $._config,
       } else {}
     ) + (
       if $._config.cache_chunks_enabled && $._config.cache_chunks_backend == 'memcached' then {
@@ -544,6 +547,7 @@
     ) + (
       if $._config.cache_chunks_enabled && $._config.cache_chunks_backend == 'redis' then {
         'blocks-storage.bucket-store.chunks-cache.backend': 'redis',
+        'blocks-storage.bucket-store.chunks.redis.endpoint': 'dnssrvnoa+redis-chunks.%(namespace)s.svc.cluster.local:6379' % $._config,
       } else {}
     ),
 
@@ -558,6 +562,7 @@
     ) + (
       if $._config.cache_metadata_enabled && $._config.cache_metadata_backend == 'redis' then {
         'blocks-storage.bucket-store.metadata-cache.backend': 'redis',
+        'blocks-storage.bucket-store.metadata.redis.endpoint': 'dnssrvnoa+redis-metadata.%(namespace)s.svc.cluster.local:6379' % $._config,
       } else {}
     ),
 

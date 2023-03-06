@@ -13,16 +13,28 @@
       // Cache query results.
       'query-frontend.align-queries-with-step': false,
       'query-frontend.cache-results': true,
-      'query-frontend.results-cache.backend': 'memcached',
-      'query-frontend.results-cache.memcached.addresses': 'dnssrvnoa+memcached-frontend.%(namespace)s.svc.cluster.local:11211' % $._config,
-      'query-frontend.results-cache.memcached.timeout': '500ms',
 
       // So that exporters like cloudwatch can still send in data and be un-cached.
       'query-frontend.max-cache-freshness': '10m',
 
       // Limit queries to 500 days; allow this to be overridden on a per-user basis.
       'query-frontend.max-total-query-length': '12000h',  // 500 days
-    } + $.mimirRuntimeConfigFile,
+    } +
+    // results-cache using memcached
+    (
+      if $._config.cache_results_backend == 'memcached' then {
+        'query-frontend.results-cache.backend': 'memcached',
+        'query-frontend.results-cache.memcached.addresses': 'dnssrvnoa+memcached-frontend.%(namespace)s.svc.cluster.local:11211' % $._config,
+        'query-frontend.results-cache.memcached.timeout': '500ms',
+      } else {}
+    ) +
+    // results-cache using redis
+    (
+      if $._config.cache_results_backend == 'redis' then {
+        'query-frontend.results-cache.backend': 'redis',
+        'query-frontend.results-cache.redis.endpoint': 'dnssrvnoa+redis-metadata.%(namespace)s.svc.cluster.local:6379' % $._config,
+      } else {}
+    ) + $.mimirRuntimeConfigFile,
 
   query_frontend_ports:: $.util.defaultPorts,
 
