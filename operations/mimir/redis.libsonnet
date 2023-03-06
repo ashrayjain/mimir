@@ -22,7 +22,7 @@ redis {
     }
   else {},
 
-  // Memcached instance used to cache chunks.
+  // Redis instance used to cache chunks.
   redis_chunks:
   if $._config.cache_chunks_enabled && $._config.cache_chunks_backend == 'redis' then
     $.redis {
