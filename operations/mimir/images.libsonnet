@@ -4,8 +4,8 @@
     memcached: 'memcached:1.6.17-alpine',
     memcachedExporter: 'prom/memcached-exporter:v0.6.0',
 
-    redis: 'redis:6.2-bullseye',
-    redis_exporter: 'oliver006/redis_exporter:latest',
+    redis: 'redis:7.0.7',
+    redis_exporter: 'oliver006/redis_exporter:v1.48.0',
 
     // Our services.
     mimir: 'grafana/mimir:2.6.0',
