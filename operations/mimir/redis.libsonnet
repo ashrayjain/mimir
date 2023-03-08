@@ -7,12 +7,12 @@ redis {
       replicas: 1,
     },
   },
-  // Dedicated memcached instance used to cache query results.
+  // Dedicated Redis instance used to cache query results.
   redis_frontend: $.redis {
     name: 'redis-frontend',
     max_item_size: '5m',
   },
-  // Dedicated redis instance used to temporarily cache index lookups.
+  // Dedicated Redis instance used to temporarily cache index lookups.
   redis_index_queries:
   if $._config.cache_index_queries_enabled && $._config.cache_index_queries_backend == 'redis' then
     $.redis {
@@ -38,7 +38,7 @@ redis {
     }
   else {},
 
-  // Memcached instance for caching TSDB blocks metadata (meta.json files, deletion marks, list of users and blocks).
+  // Redis instance for caching TSDB blocks metadata (meta.json files, deletion marks, list of users and blocks).
   redis_metadata:
   if $._config.cache_metadata_enabled && $._config.cache_metadata_backend == 'redis' then
     $.redis {
