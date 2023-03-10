@@ -20,7 +20,6 @@
 // Supporting services
 (import 'etcd.libsonnet') +
 (import 'memcached.libsonnet') +
-(import 'redis.libsonnet') +
 
 // Mimir features
 (import 'shuffle-sharding.libsonnet') +
