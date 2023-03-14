@@ -40,6 +40,8 @@
 
 ### Documentation
 
+* [CHANGE] Clarify what deprecation means in the lifecycle of configuration parameters. #4499
+
 ### Tools
 
 ## 2.7.0-rc.0
