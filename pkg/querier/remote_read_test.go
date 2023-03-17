@@ -55,7 +55,7 @@ func (m mockQuerier) Select(_ bool, sp *storage.SelectHints, matchers ...*labels
 	return m.seriesSet
 }
 
-type mockChunkQuerier struct { // trigger ci
+type mockChunkQuerier struct {
 	storage.ChunkQuerier
 	seriesSet storage.SeriesSet
 }
