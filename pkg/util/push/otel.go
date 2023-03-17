@@ -175,7 +175,7 @@ func promToMimirTimeseries(promTs *prompb.TimeSeries) mimirpb.PreallocTimeseries
 
 	histograms := make([]mimirpb.Histogram, 0, len(promTs.Histograms))
 	for _, histogram := range promTs.Histograms {
-		histograms = append(histograms, promToMimirHistogram(histogram))
+		histograms = append(histograms, promToMimirHistogram(&histogram))
 	}
 
 	exemplars := make([]mimirpb.Exemplar, 0, len(promTs.Exemplars))
@@ -204,7 +204,7 @@ func promToMimirTimeseries(promTs *prompb.TimeSeries) mimirpb.PreallocTimeseries
 	return mimirpb.PreallocTimeseries{TimeSeries: ts}
 }
 
-func promToMimirHistogram(h prompb.Histogram) mimirpb.Histogram {
+func promToMimirHistogram(h *prompb.Histogram) mimirpb.Histogram {
 	pSpans := make([]mimirpb.BucketSpan, len(h.PositiveSpans))
 	for _, span := range h.PositiveSpans {
 		pSpans = append(
@@ -237,6 +237,7 @@ func promToMimirHistogram(h prompb.Histogram) mimirpb.Histogram {
 		PositiveDeltas: h.PositiveDeltas,
 		PositiveCounts: h.PositiveCounts,
 		Timestamp:      h.Timestamp,
+		ResetHint:      mimirpb.Histogram_ResetHint(h.ResetHint),
 	}
 }
 
