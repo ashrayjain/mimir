@@ -174,8 +174,8 @@ func promToMimirTimeseries(promTs *prompb.TimeSeries) mimirpb.PreallocTimeseries
 	}
 
 	histograms := make([]mimirpb.Histogram, 0, len(promTs.Histograms))
-	for _, histogram := range promTs.Histograms {
-		histograms = append(histograms, promToMimirHistogram(&histogram))
+	for idx := range promTs.Histograms {
+		histograms = append(histograms, promToMimirHistogram(&promTs.Histograms[idx]))
 	}
 
 	exemplars := make([]mimirpb.Exemplar, 0, len(promTs.Exemplars))
